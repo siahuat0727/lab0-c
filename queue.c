@@ -30,6 +30,7 @@ queue_t *q_new()
     }
     q->head = NULL;
     q->tail = NULL;
+    q->size = 0;
     return q;
 }
 
@@ -37,6 +38,8 @@ queue_t *q_new()
 void q_free(queue_t *q)
 {
     /* How about freeing the list elements and the strings? */
+    while (q->head)
+        q_remove_head(q, NULL, 0);
     /* Free queue structure */
     free(q);
 }
@@ -61,6 +64,7 @@ bool q_insert_head(queue_t *q, char *s)
     }
     /* Don't forget to allocate space for the string and copy it */
     newh->value = strdup(s);
+    newh->next = q->head;
 
     /* What if either call to malloc returns NULL? */
     if (newh->value == NULL) {
@@ -68,8 +72,9 @@ bool q_insert_head(queue_t *q, char *s)
         return false;
     }
 
-    newh->next = q->head;
     q->head = newh;
+    q->size++;
+
     if (q->tail == NULL) {
         q->tail = newh;
     }
@@ -99,10 +104,13 @@ bool q_insert_tail(queue_t *q, char *s)
 
     newh->value = strdup(s);
     newh->next = NULL;
+
     if (q->tail) {
         q->tail->next = newh;
     }
+
     q->tail = newh;
+    q->size++;
 
     if (q->head == NULL) {
         q->head = newh;
@@ -125,12 +133,14 @@ bool q_remove_head(queue_t *q, char *sp, size_t bufsize)
     if (q == NULL || q->head == NULL) {
         return false;
     }
-    // if (sp && q->head->next) {
-    strncpy(sp, q->head->value, bufsize);
-    //    free(q->head->value);
-    //}
+    if (sp) {
+        strncpy(sp, q->head->value, bufsize - 1);
+        sp[bufsize - 1] = '\0';
+        // free(q->head->value);
+    }
     list_ele_t *tmp = q->head;
     q->head = q->head->next;
+    q->size--;
     free(tmp);
     if (q->head == NULL) {
         q->tail = NULL;
@@ -146,7 +156,7 @@ int q_size(queue_t *q)
 {
     /* You need to write the code for this function */
     /* Remember: It should operate in O(1) time */
-    return 0;
+    return q->size;
 }
 
 /*
