@@ -11,6 +11,7 @@
  * It uses a singly-linked list to represent the set of queue elements
  */
 
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -37,6 +38,8 @@ queue_t *q_new()
 /* Free all storage used by queue */
 void q_free(queue_t *q)
 {
+    if (q == NULL)
+        return;
     /* How about freeing the list elements and the strings? */
     while (q->head)
         q_remove_head(q, NULL, 0);
@@ -156,7 +159,7 @@ int q_size(queue_t *q)
 {
     /* You need to write the code for this function */
     /* Remember: It should operate in O(1) time */
-    return q->size;
+    return q ? q->size : 0;
 }
 
 /*
